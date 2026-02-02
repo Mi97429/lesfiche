@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitale Lesfiche | Don Bosco</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <style>
+        :root {
+            /* Don Bosco Kleuren */
+            --db-blue: #0015ff;
+            --db-dark: #0000a0;
+            --bg-soft: #f3f4f6;
+            --paper-white: #ffffff;
+            --border-light: #e5e7eb;
+            --section-header: #f1f5f9;
+        }
+
+        /* Zorgt voor correcte uitlijning (padding zit IN de breedte) */
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-soft);
+            color: #1f2937;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- Controls (De knop) --- */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .btn-save {
+            background-color: var(--db-blue);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 21, 255, 0.3);
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-save:hover {
+            background-color: var(--db-dark);
+            transform: translateY(-2px);
+        }
+
+        /* --- A4 Papier --- */
+        .sheet {
+            background: var(--paper-white);
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 20mm;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin: 0 auto;
+        }
+
+        /* --- Header --- */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--db-blue);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+            display: block;
+        }
+
+        .doc-title {
+            text-align: right;
+        }
+
+        .doc-title h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--db-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .doc-title span {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* --- Grid --- */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-clean {
+            width: 100%;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            background: #f9fafb;
+            transition: all 0.2s;
+        }
+        
+        /* Wanneer we typen */
+        .input-clean:focus {
+            background: white;
+            border-color: var(--db-blue);
+            outline: none;
+        }
+
+        /* --- Secties --- */
+        .section-container {
+            margin-bottom: 25px;
+            /* Dit zorgt dat een blok niet breekt op de pagina-overgang */
+            page-break-inside: avoid; 
+            break-inside: avoid;
+            
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .section-header {
+            background-color: var(--section-header);
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--db-dark);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-light);
+            letter-spacing: 0.5px;
+            
+            /* Print optimalisatie voor achtergrondkleur */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* --- Editor Styling --- */
+        .ql-toolbar.ql-snow {
+            border: none !important;
+            border-bottom: 1px solid var(--border-light) !important;
+            background: white;
+        }
+
+        .ql-container.ql-snow {
+            border: none !important;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: white;
+        }
+
+        .ql-editor {
+            min-height: 80px;
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        /* =========================================
+           PRINT STIJLEN (PDF GENERATIE)
+           ========================================= */
+        @media print {
+            /* 1. Verberg de knop en achtergrond */
+            .controls { display: none !important; }
+            body { 
+                background: white; 
+                padding: 0; 
+                margin: 0;
+            }
+            .sheet {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                padding: 0; /* Marges worden door @page geregeld */
+            }
+
+            /* 2. Verberg de editor knoppenbalken */
+            .ql-toolbar { display: none !important; }
+            
+            /* 3. Verwijder borders van inputs voor strakke look */
+            .input-clean {
+                border: 1px solid #ddd; /* Of 'none' als je geen lijntjes wilt */
+                background: transparent;
+                padding: 0 5px;
+            }
+
+            /* 4. Forceer achtergrondkleuren (belangrijk voor titelbalkjes) */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            /* 5. Zorg dat tekstvakken volledig zichtbaar zijn */
+            .ql-editor {
+                height: auto !important;
+                overflow: visible !important;
+                padding: 10px 0;
+            }
+            
+            .section-container {
+                border: 1px solid #ccc; /* Iets donkerder voor print */
+            }
+        }
+
+        /* Paginamarges instellen voor de printer */
+        @page {
+            margin: 15mm 15mm;
+            size: A4 portrait;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button class="btn-save" onclick="saveToPDF()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            &nbsp; Opslaan als PDF
+        </button>
+    </div>
+
+    <div class="sheet">
+        <div class="header-section">
+            <div class="logo-container">
+                <img src="logo.jpg" alt="Don Bosco Logo" style="max-width: 180px;">
+            </div>
+            <div class="doc-title">
+                <h1>Lesvoorbereiding</h1>
+                <span>Digitale Fiche</span>
+            </div>
+        </div>
+
+        <div class="meta-grid">
+            <div class="input-group">
+                <label>Vak</label>
+                <input type="text" class="input-clean" id="vak" placeholder="Invullen...">
+            </div>
+            <div class="input-group">
+                <label>Klas</label>
+                <input type="text" class="input-clean" placeholder="Invullen...">
+            </div>
+            <div class="input-group">
+                <label>Tijd / Duur</label>
+                <input type="text" class="input-clean" placeholder="Invullen...">
+            </div>
+        </div>
+
+        <div class="section-container">
+            <div class="section-header">Lesonderwerp</div>
+            <input type="text" id="onderwerp" class="input-clean" style="border:none; font-size: 16px; font-weight:600; padding: 15px;" placeholder="Titel van de les...">
+        </div>
+
+        <div class="section-container">
+            <div class="section-header">Leerplandoelstellingen</div>
+            <div id="editor-doelen"></div>
+        </div>
+
+        <div class="section-container">
+            <div class="section-header">Leerplandoelstellingen (Vertaling)</div>
+            <div id="editor-vertaling"></div>
+        </div>
+
+        <div class="section-container">
+            <div class="section-header">Lesverloop</div>
+            <div id="editor-verloop" style="min-height: 200px"></div>
+        </div>
+
+        <div class="section-container">
+            <div class="section-header">Werkvormen</div>
+            <div id="editor-werkvormen"></div>
+        </div>
+
+        <div class="section-container">
+            <div class="section-header">Bordschema</div>
+            <div id="editor-bord" style="min-height: 150px"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Editor Configuratie ---
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'color': [] }, { 'background': [] }],
+            ['clean']
+        ];
+
+        function initEditor(selector, placeholder) {
+            return new Quill(selector, {
+                theme: 'snow',
+                placeholder: placeholder,
+                modules: { toolbar: toolbarOptions }
+            });
+        }
+
+        // Start Editors
+        initEditor('#editor-doelen', '...');
+        initEditor('#editor-vertaling', '...');
+        initEditor('#editor-verloop', '...');
+        initEditor('#editor-werkvormen', '...');
+        initEditor('#editor-bord', '...');
+
+        // --- 2. De Nieuwe PDF Functie ---
+        function saveToPDF() {
+            // Stel de titel van het document in (dit wordt de bestandsnaam)
+            const vak = document.getElementById('vak').value || 'Vak';
+            const onderwerp = document.getElementById('onderwerp').value || 'Les';
+            document.title = `${vak} - ${onderwerp}`; // Browser gebruikt dit als filename
+            
+            // Roep de browser print dialoog op
+            window.print();
+        }
+    </script>
+</body>
+</html>
