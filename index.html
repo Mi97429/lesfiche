@@ -70,7 +70,8 @@
             background: var(--paper-white);
             width: 210mm;
             min-height: 297mm;
-            padding: 15mm 20mm;
+            /* Dit zorgt voor de witruimte OP het papier */
+            padding: 15mm 20mm; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             position: relative;
             margin: 0 auto;
@@ -141,7 +142,6 @@
             transition: all 0.2s;
         }
         
-        /* Wanneer we typen */
         .input-clean:focus {
             background: white;
             border-color: var(--db-blue);
@@ -151,10 +151,8 @@
         /* --- Secties --- */
         .section-container {
             margin-bottom: 25px;
-            /* Dit zorgt dat een blok niet breekt op de pagina-overgang */
             page-break-inside: avoid; 
             break-inside: avoid;
-            
             border: 1px solid var(--border-light);
             border-radius: 6px;
             overflow: hidden;
@@ -170,8 +168,6 @@
             text-transform: uppercase;
             border-bottom: 1px solid var(--border-light);
             letter-spacing: 0.5px;
-            
-            /* Print optimalisatie voor achtergrondkleur */
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -200,53 +196,48 @@
            PRINT STIJLEN (PDF GENERATIE)
            ========================================= */
         @media print {
-            /* 1. Verberg de knop en achtergrond */
             .controls { display: none !important; }
+            
             body { 
                 background: white; 
-                padding: 0; 
                 margin: 0;
-            }
-            .sheet {
-                box-shadow: none;
-                margin: 0;
-                width: 100%;
-                max-width: 100%;
-                padding: 0; /* Marges worden door @page geregeld */
+                padding: 0;
             }
 
-            /* 2. Verberg de editor knoppenbalken */
+            .sheet {
+                box-shadow: none;
+                width: 100%;
+                /* We gebruiken de padding van de sheet als 'marge' voor de tekst */
+                padding: 15mm 20mm; 
+                margin: 0;
+            }
+
             .ql-toolbar { display: none !important; }
             
-            /* 3. Verwijder borders van inputs voor strakke look */
             .input-clean {
-                border: 1px solid #ddd; /* Of 'none' als je geen lijntjes wilt */
+                border: 1px solid #ddd;
                 background: transparent;
                 padding: 0 5px;
             }
 
-            /* 4. Forceer achtergrondkleuren (belangrijk voor titelbalkjes) */
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
-                color-adjust: exact !important;
             }
 
-            /* 5. Zorg dat tekstvakken volledig zichtbaar zijn */
             .ql-editor {
                 height: auto !important;
                 overflow: visible !important;
                 padding: 10px 0;
             }
-            
-            .section-container {
-                border: 1px solid #ccc; /* Iets donkerder voor print */
-            }
         }
 
-        /* Paginamarges instellen voor de printer */
+        /* HIER ZIT DE TRUC: 
+           Door margin op 0 te zetten, verbergt de browser 
+           automatisch de headers en footers.
+        */
         @page {
-            margin: 15mm 15mm;
+            margin: 0; 
             size: A4 portrait;
         }
     </style>
@@ -341,14 +332,11 @@
         initEditor('#editor-werkvormen', '...');
         initEditor('#editor-bord', '...');
 
-        // --- 2. De Nieuwe PDF Functie ---
+        // --- 2. Save Functie ---
         function saveToPDF() {
-            // Stel de titel van het document in (dit wordt de bestandsnaam)
             const vak = document.getElementById('vak').value || 'Vak';
             const onderwerp = document.getElementById('onderwerp').value || 'Les';
-            document.title = `${vak} - ${onderwerp}`; // Browser gebruikt dit als filename
-            
-            // Roep de browser print dialoog op
+            document.title = `${vak} - ${onderwerp}`; 
             window.print();
         }
     </script>
