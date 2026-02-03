@@ -324,6 +324,11 @@
         </div>
 
         <div class="section-container">
+            <div class="section-header">Differentiatie & Zorg</div>
+            <div id="editor-differentiatie"></div>
+        </div>
+
+        <div class="section-container">
             <div class="section-header">Lesopbouw</div>
             <div id="editor-lesverloop" style="min-height: 250px"></div>
         </div>
@@ -404,6 +409,11 @@
             </div>
         </div>
 
+        <div class="section-container">
+            <div class="section-header">Huiswerk / Afspraken</div>
+            <div id="editor-huiswerk"></div>
+        </div>
+
         <div class="section-container reflection-container editor-clean">
             <div class="section-header reflection-header">Zelf-evaluatie: Wat pak ik volgende keer anders aan?</div>
             <div class="smiley-rating">
@@ -431,7 +441,7 @@
             "<p><br></p>";
 
         // --- Quill Setup ---
-        // 1. Full Toolbar (voor doelen, lesopbouw)
+        // 1. Full Toolbar (voor doelen, lesopbouw, differentiatie)
         const fullToolbarOptions = [
             [{ 'size': ['small', false, 'large', 'huge'] }], 
             ['bold', 'italic', 'underline'],
@@ -482,9 +492,9 @@
         // Rijke editors
         initRichEditor('#editor-leerplan', 'Doelen...');
         initRichEditor('#editor-lesdoelen', 'Wat moeten ze kennen/kunnen?');
+        initRichEditor('#editor-differentiatie', 'Bv. extra tijd voor... / uitdaging voor...');
         
         const verloopEditor = initRichEditor('#editor-lesverloop', '');
-        // Checken of hij leeg is, zo ja: standaard tekst invullen
         if (verloopEditor.getText().trim().length === 0) {
             verloopEditor.root.innerHTML = defaultLesverloop;
         }
@@ -492,6 +502,7 @@
         // Simpele editors (zonder werkbalk)
         initCleanEditor('#editor-werkvormen', 'Extra notities bij werkvormen...');
         initCleanEditor('#editor-materiaal', 'Extra notities (bv. paginanummers)...');
+        initCleanEditor('#editor-huiswerk', 'Bv. Oefening 5 en 6 tegen volgende les...');
         initCleanEditor('#editor-reflectie', 'Eigen notities...');
         
         // Bord
@@ -549,6 +560,7 @@
                 
                 leerplan: quillInstances['#editor-leerplan'].root.innerHTML,
                 lesdoelen: quillInstances['#editor-lesdoelen'].root.innerHTML,
+                differentiatie: quillInstances['#editor-differentiatie'].root.innerHTML,
                 lesverloop: quillInstances['#editor-lesverloop'].root.innerHTML,
                 
                 checkWerkvormen: getCheckboxes('check-werkvormen'),
@@ -560,6 +572,7 @@
                 bordLinks: quillInstances['#editor-bord-links'].root.innerHTML,
                 bordMidden: quillInstances['#editor-bord-midden'].root.innerHTML,
                 bordRechts: quillInstances['#editor-bord-rechts'].root.innerHTML,
+                huiswerk: quillInstances['#editor-huiswerk'].root.innerHTML,
                 reflectie: quillInstances['#editor-reflectie'].root.innerHTML,
                 
                 evaluatieScore: currentSmileyScore
@@ -575,6 +588,7 @@
 
             if(data.leerplan) quillInstances['#editor-leerplan'].root.innerHTML = data.leerplan;
             if(data.lesdoelen) quillInstances['#editor-lesdoelen'].root.innerHTML = data.lesdoelen;
+            if(data.differentiatie) quillInstances['#editor-differentiatie'].root.innerHTML = data.differentiatie;
             
             if(data.lesverloop) {
                 quillInstances['#editor-lesverloop'].root.innerHTML = data.lesverloop;
@@ -591,6 +605,7 @@
             if(data.bordLinks) quillInstances['#editor-bord-links'].root.innerHTML = data.bordLinks;
             if(data.bordMidden) quillInstances['#editor-bord-midden'].root.innerHTML = data.bordMidden;
             if(data.bordRechts) quillInstances['#editor-bord-rechts'].root.innerHTML = data.bordRechts;
+            if(data.huiswerk) quillInstances['#editor-huiswerk'].root.innerHTML = data.huiswerk;
             if(data.reflectie) quillInstances['#editor-reflectie'].root.innerHTML = data.reflectie;
             
             if (data.evaluatieScore) setSmiley(data.evaluatieScore); else setSmiley(0);
