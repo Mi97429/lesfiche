@@ -12,19 +12,16 @@
 
     <style>
         :root {
-            /* Don Bosco Kleuren */
             --db-blue: #0015ff;
             --db-dark: #0000a0;
             --bg-soft: #f3f4f6;
             --paper-white: #ffffff;
             --border-light: #e5e7eb;
             --section-header: #f1f5f9;
+            --danger-red: #ef4444; 
         }
 
-        /* Zorgt voor correcte uitlijning (padding zit IN de breedte) */
-        *, *:before, *:after {
-            box-sizing: border-box;
-        }
+        *, *:before, *:after { box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -36,42 +33,54 @@
             justify-content: center;
         }
 
-        /* --- Controls (De knop) --- */
+        /* --- Controls --- */
         .controls {
             position: fixed;
             bottom: 30px;
             right: 30px;
             z-index: 1000;
+            display: flex;
+            flex-direction: column; 
+            gap: 10px;
         }
 
-        .btn-save {
-            background-color: var(--db-blue);
-            color: white;
+        .btn {
             border: none;
-            padding: 15px 30px;
+            padding: 12px 24px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            box-shadow: 0 10px 25px rgba(0, 21, 255, 0.3);
             cursor: pointer;
             transition: transform 0.2s ease, background-color 0.2s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .btn-save:hover {
-            background-color: var(--db-dark);
-            transform: translateY(-2px);
+        .btn-save { background-color: var(--db-blue); color: white; }
+        .btn-save:hover { background-color: var(--db-dark); transform: translateY(-2px); }
+
+        .btn-new { background-color: white; color: var(--danger-red); border: 1px solid var(--danger-red); }
+        .btn-new:hover { background-color: #fef2f2; }
+
+        #save-status {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            font-size: 12px;
+            color: #6b7280;
+            opacity: 0;
+            transition: opacity 0.5s;
         }
 
-        /* --- A4 Papier --- */
+        /* --- A4 Papier (Scherm) --- */
         .sheet {
             background: var(--paper-white);
             width: 210mm;
             min-height: 297mm;
-            /* Dit zorgt voor de witruimte OP het papier */
-            padding: 15mm 20mm; 
+            padding: 15mm 20mm;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             position: relative;
             margin: 0 auto;
@@ -87,32 +96,12 @@
             margin-bottom: 30px;
         }
 
-        .logo-container img {
-            max-width: 200px;
-            height: auto;
-            display: block;
-        }
+        .logo-container img { max-width: 200px; height: auto; display: block; }
+        .doc-title { text-align: right; }
+        .doc-title h1 { margin: 0; font-size: 24px; color: var(--db-blue); text-transform: uppercase; letter-spacing: 1px; }
+        .doc-title span { font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: 600; }
 
-        .doc-title {
-            text-align: right;
-        }
-
-        .doc-title h1 {
-            margin: 0;
-            font-size: 24px;
-            color: var(--db-blue);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .doc-title span {
-            font-size: 12px;
-            color: #6b7280;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        /* --- Grid --- */
+        /* --- Meta Grid --- */
         .meta-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -141,12 +130,7 @@
             background: #f9fafb;
             transition: all 0.2s;
         }
-        
-        .input-clean:focus {
-            background: white;
-            border-color: var(--db-blue);
-            outline: none;
-        }
+        .input-clean:focus { background: white; border-color: var(--db-blue); outline: none; }
 
         /* --- Secties --- */
         .section-container {
@@ -172,72 +156,65 @@
             print-color-adjust: exact;
         }
 
-        /* --- Editor Styling --- */
-        .ql-toolbar.ql-snow {
-            border: none !important;
-            border-bottom: 1px solid var(--border-light) !important;
-            background: white;
-        }
+        /* --- Editors --- */
+        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid var(--border-light) !important; background: white; }
+        .ql-container.ql-snow { border: none !important; font-family: 'Inter', sans-serif; font-size: 14px; background: white; }
+        .ql-editor { min-height: 80px; padding: 15px; line-height: 1.6; }
 
-        .ql-container.ql-snow {
-            border: none !important;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            background: white;
-        }
+        /* --- Gedeelde Werkbalk --- */
+        #toolbar-bordschema { border: none; border-bottom: 1px solid var(--border-light); background: white; padding: 8px; }
 
-        .ql-editor {
-            min-height: 80px;
-            padding: 15px;
-            line-height: 1.6;
-        }
+        /* --- Bord 3-Luik --- */
+        .board-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+        .board-column { border-right: 1px solid var(--border-light); background: #fafafa; display: flex; flex-direction: column; }
+        .board-column:last-child { border-right: none; }
+        .board-col-title { font-size: 10px; text-transform: uppercase; text-align: center; color: #9ca3af; padding: 5px; border-bottom: 1px dashed #e5e7eb; font-weight: bold; }
 
         /* =========================================
-           PRINT STIJLEN (PDF GENERATIE)
+           PRINT STIJLEN (Aangepast)
            ========================================= */
         @media print {
             .controls { display: none !important; }
+            #save-status { display: none !important; }
+            .ql-toolbar, #toolbar-bordschema { display: none !important; }
             
             body { 
                 background: white; 
-                margin: 0;
-                padding: 0;
+                margin: 0; 
+                padding: 0; 
             }
 
             .sheet {
                 box-shadow: none;
                 width: 100%;
-                /* We gebruiken de padding van de sheet als 'marge' voor de tekst */
-                padding: 15mm 20mm; 
                 margin: 0;
+                padding: 0 20mm; 
             }
 
-            .ql-toolbar { display: none !important; }
+            /* FIX: Input velden padding behouden */
+            .input-clean { 
+                border: 1px solid #ddd; 
+                background: transparent; 
+                padding: 5px 10px !important; 
+            }
+
+            .section-container { border: 1px solid #ccc; }
             
-            .input-clean {
-                border: 1px solid #ddd;
-                background: transparent;
-                padding: 0 5px;
-            }
-
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            .ql-editor {
-                height: auto !important;
-                overflow: visible !important;
-                padding: 10px 0;
+            .board-grid { border-top: 1px solid #ccc; }
+            .board-column { border-right: 1px solid #ccc; background: transparent !important; }
+            
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            
+            /* FIX: Hier zorgen we dat de tekst NIET tegen de rand plakt */
+            .ql-editor { 
+                height: auto !important; 
+                overflow: visible !important; 
+                padding: 10px 15px !important; /* 15px afstand links/rechts */
             }
         }
 
-        /* HIER ZIT DE TRUC: 
-           Door margin op 0 te zetten, verbergt de browser 
-           automatisch de headers en footers.
-        */
         @page {
-            margin: 0; 
+            margin: 20mm 0; 
             size: A4 portrait;
         }
     </style>
@@ -245,11 +222,17 @@
 <body>
 
     <div class="controls">
-        <button class="btn-save" onclick="saveToPDF()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-            &nbsp; Opslaan als PDF
+        <button class="btn btn-save" onclick="saveToPDF()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Opslaan als PDF
+        </button>
+        <button class="btn btn-new" onclick="clearForm()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            Nieuwe Les
         </button>
     </div>
+
+    <div id="save-status">Wijzigingen automatisch opgeslagen</div>
 
     <div class="sheet">
         <div class="header-section">
@@ -269,11 +252,11 @@
             </div>
             <div class="input-group">
                 <label>Klas</label>
-                <input type="text" class="input-clean" placeholder="Invullen...">
+                <input type="text" class="input-clean" id="klas" placeholder="Invullen...">
             </div>
             <div class="input-group">
                 <label>Tijd / Duur</label>
-                <input type="text" class="input-clean" placeholder="Invullen...">
+                <input type="text" class="input-clean" id="tijd" placeholder="Invullen...">
             </div>
         </div>
 
@@ -303,42 +286,163 @@
         </div>
 
         <div class="section-container">
-            <div class="section-header">Bordschema</div>
-            <div id="editor-bord" style="min-height: 150px"></div>
+            <div class="section-header">Bordschema (Links - Midden - Rechts)</div>
+            
+            <div id="toolbar-bordschema">
+                <span class="ql-formats">
+                    <select class="ql-size">
+                        <option value="small"></option>
+                        <option selected></option>
+                        <option value="large"></option>
+                        <option value="huge"></option>
+                    </select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-underline"></button>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-list" value="ordered"></button>
+                    <button class="ql-list" value="bullet"></button>
+                </span>
+                <span class="ql-formats">
+                    <select class="ql-color"></select>
+                    <select class="ql-background"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-clean"></button>
+                </span>
+            </div>
+
+            <div class="board-grid">
+                <div class="board-column">
+                    <div class="board-col-title">Linker Bordvleugel</div>
+                    <div id="editor-bord-links" style="min-height: 150px"></div>
+                </div>
+                <div class="board-column">
+                    <div class="board-col-title">Middenbord</div>
+                    <div id="editor-bord-midden" style="min-height: 150px"></div>
+                </div>
+                <div class="board-column">
+                    <div class="board-col-title">Rechter Bordvleugel</div>
+                    <div id="editor-bord-rechts" style="min-height: 150px"></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- 1. Editor Configuratie ---
-        const toolbarOptions = [
+        // --- JS Configuratie ---
+        const defaultToolbarOptions = [
+            [{ 'size': ['small', false, 'large', 'huge'] }], 
             ['bold', 'italic', 'underline'],
             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
             [{ 'color': [] }, { 'background': [] }],
             ['clean']
         ];
 
-        function initEditor(selector, placeholder) {
-            return new Quill(selector, {
+        const quillInstances = {};
+
+        function initEditor(id, placeholder) {
+            const quill = new Quill(id, {
                 theme: 'snow',
                 placeholder: placeholder,
-                modules: { toolbar: toolbarOptions }
+                modules: { toolbar: defaultToolbarOptions }
             });
+            quillInstances[id] = quill;
+            quill.on('text-change', () => saveData());
+            return quill;
         }
 
-        // Start Editors
-        initEditor('#editor-doelen', '...');
-        initEditor('#editor-vertaling', '...');
-        initEditor('#editor-verloop', '...');
-        initEditor('#editor-werkvormen', '...');
-        initEditor('#editor-bord', '...');
+        function initBoardEditor(id, placeholder) {
+            const quill = new Quill(id, {
+                theme: 'snow',
+                placeholder: placeholder,
+                modules: { toolbar: '#toolbar-bordschema' }
+            });
+            quillInstances[id] = quill;
+            quill.on('text-change', () => saveData());
+            return quill;
+        }
 
-        // --- 2. Save Functie ---
+        initEditor('#editor-doelen', 'Typ hier...');
+        initEditor('#editor-vertaling', 'Typ hier...');
+        initEditor('#editor-verloop', 'Typ hier...');
+        initEditor('#editor-werkvormen', 'Typ hier...');
+        
+        initBoardEditor('#editor-bord-links', 'L...');
+        initBoardEditor('#editor-bord-midden', 'M...');
+        initBoardEditor('#editor-bord-rechts', 'R...');
+
+        // Auto-Save
+        const inputs = ['vak', 'klas', 'tijd', 'onderwerp'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', saveData);
+        });
+
+        function saveData() {
+            const data = {
+                vak: document.getElementById('vak').value,
+                klas: document.getElementById('klas').value,
+                tijd: document.getElementById('tijd').value,
+                onderwerp: document.getElementById('onderwerp').value,
+                
+                doelen: quillInstances['#editor-doelen'].root.innerHTML,
+                vertaling: quillInstances['#editor-vertaling'].root.innerHTML,
+                verloop: quillInstances['#editor-verloop'].root.innerHTML,
+                werkvormen: quillInstances['#editor-werkvormen'].root.innerHTML,
+                
+                bordLinks: quillInstances['#editor-bord-links'].root.innerHTML,
+                bordMidden: quillInstances['#editor-bord-midden'].root.innerHTML,
+                bordRechts: quillInstances['#editor-bord-rechts'].root.innerHTML
+            };
+
+            localStorage.setItem('lesficheData', JSON.stringify(data));
+            const status = document.getElementById('save-status');
+            status.style.opacity = '1';
+            setTimeout(() => { status.style.opacity = '0'; }, 2000);
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('lesficheData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('vak').value = data.vak || '';
+                document.getElementById('klas').value = data.klas || '';
+                document.getElementById('tijd').value = data.tijd || '';
+                document.getElementById('onderwerp').value = data.onderwerp || '';
+
+                if(data.doelen) quillInstances['#editor-doelen'].root.innerHTML = data.doelen;
+                if(data.vertaling) quillInstances['#editor-vertaling'].root.innerHTML = data.vertaling;
+                if(data.verloop) quillInstances['#editor-verloop'].root.innerHTML = data.verloop;
+                if(data.werkvormen) quillInstances['#editor-werkvormen'].root.innerHTML = data.werkvormen;
+                
+                if(data.bordLinks) quillInstances['#editor-bord-links'].root.innerHTML = data.bordLinks;
+                if(data.bordMidden) quillInstances['#editor-bord-midden'].root.innerHTML = data.bordMidden;
+                if(data.bordRechts) quillInstances['#editor-bord-rechts'].root.innerHTML = data.bordRechts;
+            }
+        }
+
+        function clearForm() {
+            if(confirm('Weet je zeker dat je een nieuwe les wilt beginnen?')) {
+                localStorage.removeItem('lesficheData');
+                inputs.forEach(id => document.getElementById(id).value = '');
+                for (const key in quillInstances) {
+                    quillInstances[key].setText('');
+                }
+                window.scrollTo(0,0);
+            }
+        }
+
         function saveToPDF() {
             const vak = document.getElementById('vak').value || 'Vak';
             const onderwerp = document.getElementById('onderwerp').value || 'Les';
             document.title = `${vak} - ${onderwerp}`; 
             window.print();
         }
+
+        window.onload = loadData;
     </script>
 </body>
 </html>
