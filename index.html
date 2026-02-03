@@ -19,6 +19,7 @@
             --border-light: #e5e7eb;
             --section-header: #f1f5f9;
             --danger-red: #ef4444; 
+            --success-green: #10b981;
         }
 
         *, *:before, *:after { box-sizing: border-box; }
@@ -48,22 +49,31 @@
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s ease, background-color 0.2s;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            justify-content: flex-start; 
+            gap: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 200px; 
         }
 
-        .btn-save { background-color: var(--db-blue); color: white; }
-        .btn-save:hover { background-color: var(--db-dark); transform: translateY(-2px); }
+        .btn-pdf { background-color: var(--db-blue); color: white; }
+        .btn-pdf:hover { background-color: var(--db-dark); transform: translateY(-2px); }
+
+        .btn-save-file { background-color: var(--success-green); color: white; }
+        .btn-save-file:hover { background-color: #059669; transform: translateY(-2px); }
+
+        .btn-load-file { background-color: #ffffff; color: #374151; border: 1px solid #d1d5db; }
+        .btn-load-file:hover { background-color: #f3f4f6; transform: translateY(-2px); }
 
         .btn-new { background-color: white; color: var(--danger-red); border: 1px solid var(--danger-red); }
         .btn-new:hover { background-color: #fef2f2; }
+
+        #file-input { display: none; }
 
         #save-status {
             position: fixed;
@@ -75,7 +85,7 @@
             transition: opacity 0.5s;
         }
 
-        /* --- A4 Papier (Scherm) --- */
+        /* --- A4 Papier --- */
         .sheet {
             background: var(--paper-white);
             width: 210mm;
@@ -104,8 +114,8 @@
         /* --- Meta Grid --- */
         .meta-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
             margin-bottom: 30px;
             width: 100%;
         }
@@ -134,7 +144,7 @@
 
         /* --- Secties --- */
         .section-container {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             page-break-inside: avoid; 
             break-inside: avoid;
             border: 1px solid var(--border-light);
@@ -145,8 +155,8 @@
 
         .section-header {
             background-color: var(--section-header);
-            padding: 10px 15px;
-            font-size: 13px;
+            padding: 8px 15px;
+            font-size: 12px;
             font-weight: 700;
             color: var(--db-dark);
             text-transform: uppercase;
@@ -156,12 +166,47 @@
             print-color-adjust: exact;
         }
 
-        /* --- Editors --- */
-        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid var(--border-light) !important; background: white; }
-        .ql-container.ql-snow { border: none !important; font-family: 'Inter', sans-serif; font-size: 14px; background: white; }
-        .ql-editor { min-height: 80px; padding: 15px; line-height: 1.6; }
+        /* --- Checkboxes Styles --- */
+        .checkbox-container {
+            padding: 15px 15px 5px 15px;
+            background: #fff;
+            border-bottom: 1px dashed var(--border-light);
+        }
+        
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 kolommen */
+            gap: 10px;
+        }
 
-        /* --- Gedeelde Werkbalk --- */
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            margin-right: 8px;
+            transform: scale(1.1);
+            accent-color: var(--db-blue);
+            cursor: pointer;
+        }
+
+        /* --- Editors algemeen --- */
+        .ql-container.ql-snow { border: none !important; font-family: 'Inter', sans-serif; font-size: 14px; background: white; }
+        .ql-editor { min-height: 50px; padding: 12px 15px; line-height: 1.5; }
+        
+        /* Editors MET toolbar (bovenaan) */
+        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid var(--border-light) !important; background: white; }
+
+        /* Editors ZONDER toolbar (strak) - lichte border bovenkant */
+        .editor-clean .ql-container.ql-snow {
+            border-top: 1px solid #f3f4f6 !important;
+        }
+
+        /* --- Gedeelde Werkbalk Bordschema --- */
         #toolbar-bordschema { border: none; border-bottom: 1px solid var(--border-light); background: white; padding: 8px; }
 
         /* --- Bord 3-Luik --- */
@@ -170,62 +215,61 @@
         .board-column:last-child { border-right: none; }
         .board-col-title { font-size: 10px; text-transform: uppercase; text-align: center; color: #9ca3af; padding: 5px; border-bottom: 1px dashed #e5e7eb; font-weight: bold; }
 
+        /* --- Zelfreflectie --- */
+        .reflection-container { border-color: #fcd34d; }
+        .reflection-header { background-color: #fffbeb; color: #b45309; }
+
+        /* --- Smileys --- */
+        .smiley-rating { display: flex; gap: 15px; padding: 10px 15px; border-bottom: 1px solid #fcd34d; background: #fff; }
+        .smiley-btn { font-size: 24px; cursor: pointer; opacity: 0.3; filter: grayscale(100%); transition: all 0.2s; user-select: none; }
+        .smiley-btn:hover { opacity: 0.7; transform: scale(1.1); filter: grayscale(50%); }
+        .smiley-btn.selected { opacity: 1; filter: grayscale(0%); transform: scale(1.3); }
+
         /* =========================================
-           PRINT STIJLEN (Aangepast)
+           PRINT STIJLEN
            ========================================= */
         @media print {
             .controls { display: none !important; }
             #save-status { display: none !important; }
             .ql-toolbar, #toolbar-bordschema { display: none !important; }
             
-            body { 
-                background: white; 
-                margin: 0; 
-                padding: 0; 
-            }
+            body { background: white; margin: 0; padding: 0; }
+            .sheet { box-shadow: none; width: 100%; margin: 0; padding: 0 20mm; }
 
-            .sheet {
-                box-shadow: none;
-                width: 100%;
-                margin: 0;
-                padding: 0 20mm; 
-            }
-
-            /* FIX: Input velden padding behouden */
-            .input-clean { 
-                border: 1px solid #ddd; 
-                background: transparent; 
-                padding: 5px 10px !important; 
-            }
-
+            .input-clean { border: 1px solid #ddd; background: transparent; padding: 5px 10px !important; }
             .section-container { border: 1px solid #ccc; }
-            
+            .checkbox-container { border-bottom: 1px solid #ccc; }
             .board-grid { border-top: 1px solid #ccc; }
             .board-column { border-right: 1px solid #ccc; background: transparent !important; }
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             
-            /* FIX: Hier zorgen we dat de tekst NIET tegen de rand plakt */
-            .ql-editor { 
-                height: auto !important; 
-                overflow: visible !important; 
-                padding: 10px 15px !important; /* 15px afstand links/rechts */
-            }
+            .ql-editor { height: auto !important; overflow: visible !important; padding: 5px 15px !important; }
+            .smiley-btn { display: inline-block; }
         }
 
-        @page {
-            margin: 20mm 0; 
-            size: A4 portrait;
-        }
+        @page { margin: 20mm 0; size: A4 portrait; }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <button class="btn btn-save" onclick="saveToPDF()">
+        <button class="btn btn-save-file" onclick="downloadData()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-            Opslaan als PDF
+            Les Opslaan
         </button>
+
+        <input type="file" id="file-input" accept=".json" onchange="uploadData(this)">
+        <button class="btn btn-load-file" onclick="document.getElementById('file-input').click()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/></svg>
+            Les Openen
+        </button>
+
+        <button class="btn btn-pdf" onclick="saveToPDF()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            PDF Maken
+        </button>
+
         <button class="btn btn-new" onclick="clearForm()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             Nieuwe Les
@@ -248,15 +292,19 @@
         <div class="meta-grid">
             <div class="input-group">
                 <label>Vak</label>
-                <input type="text" class="input-clean" id="vak" placeholder="Invullen...">
+                <input type="text" class="input-clean" id="vak">
             </div>
             <div class="input-group">
                 <label>Klas</label>
-                <input type="text" class="input-clean" id="klas" placeholder="Invullen...">
+                <input type="text" class="input-clean" id="klas">
+            </div>
+            <div class="input-group">
+                <label>Lesuur</label>
+                <input type="text" class="input-clean" id="lesuur" placeholder="bv. 3e uur">
             </div>
             <div class="input-group">
                 <label>Tijd / Duur</label>
-                <input type="text" class="input-clean" id="tijd" placeholder="Invullen...">
+                <input type="text" class="input-clean" id="tijd" placeholder="bv. 50 min">
             </div>
         </div>
 
@@ -266,23 +314,48 @@
         </div>
 
         <div class="section-container">
-            <div class="section-header">Leerplandoelstellingen</div>
-            <div id="editor-doelen"></div>
+            <div class="section-header">Leerplandoelen (Llinkid / Lesfiche)</div>
+            <div id="editor-leerplan"></div>
         </div>
 
         <div class="section-container">
-            <div class="section-header">Leerplandoelstellingen (Vertaling)</div>
-            <div id="editor-vertaling"></div>
+            <div class="section-header">Lesdoelen (Concreet)</div>
+            <div id="editor-lesdoelen"></div>
         </div>
 
         <div class="section-container">
-            <div class="section-header">Lesverloop</div>
-            <div id="editor-verloop" style="min-height: 200px"></div>
+            <div class="section-header">Lesopbouw</div>
+            <div id="editor-lesverloop" style="min-height: 250px"></div>
         </div>
 
-        <div class="section-container">
-            <div class="section-header">Werkvormen</div>
+        <div class="section-container editor-clean">
+            <div class="section-header">Didactische Werkvormen</div>
+            <div class="checkbox-container" id="check-werkvormen">
+                <div class="checkbox-grid">
+                    <label class="checkbox-item"><input type="checkbox" value="Onderwijsleergesprek"> Onderwijsleergesprek</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Doceren"> Doceren / Instructie</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Groepswerk"> Groepswerk</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Partnerwerk"> Partnerwerk</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Individueel"> Zelfstandig werk</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Klasgesprek"> Klasgesprek</label>
+                </div>
+            </div>
             <div id="editor-werkvormen"></div>
+        </div>
+
+        <div class="section-container editor-clean">
+            <div class="section-header">Didactisch Materiaal</div>
+            <div class="checkbox-container" id="check-materiaal">
+                <div class="checkbox-grid">
+                    <label class="checkbox-item"><input type="checkbox" value="Bord"> Bord / Stiften</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Smartboard"> Smartboard / Beamer</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Chromebook"> Chromebook</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Handboek"> Handboek / Werkboek</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Werkblad"> Werkblaadjes (Eigen)</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Multimedia"> Audio / Video</label>
+                </div>
+            </div>
+            <div id="editor-materiaal"></div>
         </div>
 
         <div class="section-container">
@@ -330,11 +403,36 @@
                 </div>
             </div>
         </div>
+
+        <div class="section-container reflection-container editor-clean">
+            <div class="section-header reflection-header">Zelf-evaluatie: Wat pak ik volgende keer anders aan?</div>
+            <div class="smiley-rating">
+                <div class="smiley-btn" onclick="setSmiley(1)" id="smiley-1" title="Zeer ontevreden">😖</div>
+                <div class="smiley-btn" onclick="setSmiley(2)" id="smiley-2" title="Ontevreden">☹️</div>
+                <div class="smiley-btn" onclick="setSmiley(3)" id="smiley-3" title="Neutraal">😐</div>
+                <div class="smiley-btn" onclick="setSmiley(4)" id="smiley-4" title="Tevreden">🙂</div>
+                <div class="smiley-btn" onclick="setSmiley(5)" id="smiley-5" title="Zeer tevreden">🤩</div>
+            </div>
+            <div id="editor-reflectie"></div>
+        </div>
     </div>
 
     <script>
-        // --- JS Configuratie ---
-        const defaultToolbarOptions = [
+        // --- Globale variabelen ---
+        let currentSmileyScore = 0;
+        
+        // --- AANGEPASTE STANDAARD INHOUD (Geen nummers, wel onderlijnd) ---
+        const defaultLesverloop = 
+            "<p><u><strong>Beginsituatie</strong></u></p>" +
+            "<p><br></p><p><br></p><p><br></p>" +  // Ruimte
+            "<p><u><strong>Eigenlijke les</strong></u></p>" +
+            "<p><br></p><p><br></p><p><br></p>" +  // Ruimte
+            "<p><u><strong>Slot</strong></u></p>" +
+            "<p><br></p>";
+
+        // --- Quill Setup ---
+        // 1. Full Toolbar (voor doelen, lesopbouw)
+        const fullToolbarOptions = [
             [{ 'size': ['small', false, 'large', 'huge'] }], 
             ['bold', 'italic', 'underline'],
             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
@@ -344,17 +442,30 @@
 
         const quillInstances = {};
 
-        function initEditor(id, placeholder) {
+        function initRichEditor(id, placeholder) {
             const quill = new Quill(id, {
                 theme: 'snow',
                 placeholder: placeholder,
-                modules: { toolbar: defaultToolbarOptions }
+                modules: { toolbar: fullToolbarOptions }
             });
             quillInstances[id] = quill;
             quill.on('text-change', () => saveData());
             return quill;
         }
 
+        // 2. Clean Editor (ZONDER toolbar)
+        function initCleanEditor(id, placeholder) {
+            const quill = new Quill(id, {
+                theme: 'snow',
+                placeholder: placeholder,
+                modules: { toolbar: false } // Geen werkbalk
+            });
+            quillInstances[id] = quill;
+            quill.on('text-change', () => saveData());
+            return quill;
+        }
+
+        // 3. Bord Editor (met gedeelde toolbar)
         function initBoardEditor(id, placeholder) {
             const quill = new Quill(id, {
                 theme: 'snow',
@@ -366,38 +477,127 @@
             return quill;
         }
 
-        initEditor('#editor-doelen', 'Typ hier...');
-        initEditor('#editor-vertaling', 'Typ hier...');
-        initEditor('#editor-verloop', 'Typ hier...');
-        initEditor('#editor-werkvormen', 'Typ hier...');
+        // --- Editors Starten ---
         
+        // Rijke editors
+        initRichEditor('#editor-leerplan', 'Doelen...');
+        initRichEditor('#editor-lesdoelen', 'Wat moeten ze kennen/kunnen?');
+        
+        const verloopEditor = initRichEditor('#editor-lesverloop', '');
+        // Checken of hij leeg is, zo ja: standaard tekst invullen
+        if (verloopEditor.getText().trim().length === 0) {
+            verloopEditor.root.innerHTML = defaultLesverloop;
+        }
+
+        // Simpele editors (zonder werkbalk)
+        initCleanEditor('#editor-werkvormen', 'Extra notities bij werkvormen...');
+        initCleanEditor('#editor-materiaal', 'Extra notities (bv. paginanummers)...');
+        initCleanEditor('#editor-reflectie', 'Eigen notities...');
+        
+        // Bord
         initBoardEditor('#editor-bord-links', 'L...');
         initBoardEditor('#editor-bord-midden', 'M...');
         initBoardEditor('#editor-bord-rechts', 'R...');
+        
 
-        // Auto-Save
-        const inputs = ['vak', 'klas', 'tijd', 'onderwerp'];
+        // Auto-Save listeners
+        const inputs = ['vak', 'klas', 'lesuur', 'tijd', 'onderwerp'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', saveData);
         });
+        
+        // Listeners voor checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(box => {
+            box.addEventListener('change', saveData);
+        });
 
-        function saveData() {
-            const data = {
+        // --- SMILEY FUNCTIE ---
+        function setSmiley(score) {
+            currentSmileyScore = score;
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`smiley-${i}`).classList.remove('selected');
+            }
+            if (score > 0) document.getElementById(`smiley-${score}`).classList.add('selected');
+            saveData();
+        }
+
+        // --- CHECKBOX HELPER ---
+        function getCheckboxes(containerId) {
+            const inputs = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
+            const checked = [];
+            inputs.forEach(input => {
+                if(input.checked) checked.push(input.value);
+            });
+            return checked;
+        }
+
+        function setCheckboxes(containerId, values) {
+            const inputs = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
+            inputs.forEach(input => {
+                input.checked = values.includes(input.value);
+            });
+        }
+
+        // --- DATA LOGICA ---
+        function gatherData() {
+             return {
                 vak: document.getElementById('vak').value,
                 klas: document.getElementById('klas').value,
+                lesuur: document.getElementById('lesuur').value,
                 tijd: document.getElementById('tijd').value,
                 onderwerp: document.getElementById('onderwerp').value,
                 
-                doelen: quillInstances['#editor-doelen'].root.innerHTML,
-                vertaling: quillInstances['#editor-vertaling'].root.innerHTML,
-                verloop: quillInstances['#editor-verloop'].root.innerHTML,
+                leerplan: quillInstances['#editor-leerplan'].root.innerHTML,
+                lesdoelen: quillInstances['#editor-lesdoelen'].root.innerHTML,
+                lesverloop: quillInstances['#editor-lesverloop'].root.innerHTML,
+                
+                checkWerkvormen: getCheckboxes('check-werkvormen'),
                 werkvormen: quillInstances['#editor-werkvormen'].root.innerHTML,
+                
+                checkMateriaal: getCheckboxes('check-materiaal'),
+                materiaal: quillInstances['#editor-materiaal'].root.innerHTML,
                 
                 bordLinks: quillInstances['#editor-bord-links'].root.innerHTML,
                 bordMidden: quillInstances['#editor-bord-midden'].root.innerHTML,
-                bordRechts: quillInstances['#editor-bord-rechts'].root.innerHTML
+                bordRechts: quillInstances['#editor-bord-rechts'].root.innerHTML,
+                reflectie: quillInstances['#editor-reflectie'].root.innerHTML,
+                
+                evaluatieScore: currentSmileyScore
             };
+        }
 
+        function populateData(data) {
+            document.getElementById('vak').value = data.vak || '';
+            document.getElementById('klas').value = data.klas || '';
+            document.getElementById('lesuur').value = data.lesuur || '';
+            document.getElementById('tijd').value = data.tijd || '';
+            document.getElementById('onderwerp').value = data.onderwerp || '';
+
+            if(data.leerplan) quillInstances['#editor-leerplan'].root.innerHTML = data.leerplan;
+            if(data.lesdoelen) quillInstances['#editor-lesdoelen'].root.innerHTML = data.lesdoelen;
+            
+            if(data.lesverloop) {
+                quillInstances['#editor-lesverloop'].root.innerHTML = data.lesverloop;
+            } else {
+                quillInstances['#editor-lesverloop'].root.innerHTML = defaultLesverloop;
+            }
+            
+            if(data.checkWerkvormen) setCheckboxes('check-werkvormen', data.checkWerkvormen);
+            if(data.werkvormen) quillInstances['#editor-werkvormen'].root.innerHTML = data.werkvormen;
+
+            if(data.checkMateriaal) setCheckboxes('check-materiaal', data.checkMateriaal);
+            if(data.materiaal) quillInstances['#editor-materiaal'].root.innerHTML = data.materiaal;
+            
+            if(data.bordLinks) quillInstances['#editor-bord-links'].root.innerHTML = data.bordLinks;
+            if(data.bordMidden) quillInstances['#editor-bord-midden'].root.innerHTML = data.bordMidden;
+            if(data.bordRechts) quillInstances['#editor-bord-rechts'].root.innerHTML = data.bordRechts;
+            if(data.reflectie) quillInstances['#editor-reflectie'].root.innerHTML = data.reflectie;
+            
+            if (data.evaluatieScore) setSmiley(data.evaluatieScore); else setSmiley(0);
+        }
+
+        function saveData() {
+            const data = gatherData();
             localStorage.setItem('lesficheData', JSON.stringify(data));
             const status = document.getElementById('save-status');
             status.style.opacity = '1';
@@ -407,30 +607,52 @@
         function loadData() {
             const saved = localStorage.getItem('lesficheData');
             if (saved) {
-                const data = JSON.parse(saved);
-                document.getElementById('vak').value = data.vak || '';
-                document.getElementById('klas').value = data.klas || '';
-                document.getElementById('tijd').value = data.tijd || '';
-                document.getElementById('onderwerp').value = data.onderwerp || '';
-
-                if(data.doelen) quillInstances['#editor-doelen'].root.innerHTML = data.doelen;
-                if(data.vertaling) quillInstances['#editor-vertaling'].root.innerHTML = data.vertaling;
-                if(data.verloop) quillInstances['#editor-verloop'].root.innerHTML = data.verloop;
-                if(data.werkvormen) quillInstances['#editor-werkvormen'].root.innerHTML = data.werkvormen;
-                
-                if(data.bordLinks) quillInstances['#editor-bord-links'].root.innerHTML = data.bordLinks;
-                if(data.bordMidden) quillInstances['#editor-bord-midden'].root.innerHTML = data.bordMidden;
-                if(data.bordRechts) quillInstances['#editor-bord-rechts'].root.innerHTML = data.bordRechts;
+                populateData(JSON.parse(saved));
             }
+        }
+
+        function downloadData() {
+            const data = gatherData();
+            const filename = `${data.vak || 'Les'} - ${data.onderwerp || 'Voorbereiding'}.json`;
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function uploadData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    populateData(data);
+                    saveData();
+                    alert('Les succesvol ingeladen!');
+                } catch (err) {
+                    alert('Fout bij inlezen bestand.');
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
         }
 
         function clearForm() {
             if(confirm('Weet je zeker dat je een nieuwe les wilt beginnen?')) {
                 localStorage.removeItem('lesficheData');
                 inputs.forEach(id => document.getElementById(id).value = '');
+                document.querySelectorAll('input[type="checkbox"]').forEach(box => box.checked = false);
                 for (const key in quillInstances) {
                     quillInstances[key].setText('');
                 }
+                quillInstances['#editor-lesverloop'].root.innerHTML = defaultLesverloop;
+                setSmiley(0);
                 window.scrollTo(0,0);
             }
         }
