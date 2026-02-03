@@ -324,11 +324,6 @@
         </div>
 
         <div class="section-container">
-            <div class="section-header">Differentiatie & Zorg</div>
-            <div id="editor-differentiatie"></div>
-        </div>
-
-        <div class="section-container">
             <div class="section-header">Lesopbouw</div>
             <div id="editor-lesverloop" style="min-height: 250px"></div>
         </div>
@@ -441,7 +436,7 @@
             "<p><br></p>";
 
         // --- Quill Setup ---
-        // 1. Full Toolbar (voor doelen, lesopbouw, differentiatie)
+        // 1. Full Toolbar (voor doelen, lesopbouw)
         const fullToolbarOptions = [
             [{ 'size': ['small', false, 'large', 'huge'] }], 
             ['bold', 'italic', 'underline'],
@@ -492,7 +487,6 @@
         // Rijke editors
         initRichEditor('#editor-leerplan', 'Doelen...');
         initRichEditor('#editor-lesdoelen', 'Wat moeten ze kennen/kunnen?');
-        initRichEditor('#editor-differentiatie', 'Bv. extra tijd voor... / uitdaging voor...');
         
         const verloopEditor = initRichEditor('#editor-lesverloop', '');
         if (verloopEditor.getText().trim().length === 0) {
@@ -560,7 +554,6 @@
                 
                 leerplan: quillInstances['#editor-leerplan'].root.innerHTML,
                 lesdoelen: quillInstances['#editor-lesdoelen'].root.innerHTML,
-                differentiatie: quillInstances['#editor-differentiatie'].root.innerHTML,
                 lesverloop: quillInstances['#editor-lesverloop'].root.innerHTML,
                 
                 checkWerkvormen: getCheckboxes('check-werkvormen'),
@@ -588,7 +581,6 @@
 
             if(data.leerplan) quillInstances['#editor-leerplan'].root.innerHTML = data.leerplan;
             if(data.lesdoelen) quillInstances['#editor-lesdoelen'].root.innerHTML = data.lesdoelen;
-            if(data.differentiatie) quillInstances['#editor-differentiatie'].root.innerHTML = data.differentiatie;
             
             if(data.lesverloop) {
                 quillInstances['#editor-lesverloop'].root.innerHTML = data.lesverloop;
