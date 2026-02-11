@@ -10,6 +10,8 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <style>
         :root {
             --db-blue: #0015ff;
@@ -34,7 +36,7 @@
             justify-content: center;
         }
 
-        /* --- Controls --- */
+        /* --- Controls (Knoppen rechtsonder) --- */
         .controls {
             position: fixed;
             bottom: 30px;
@@ -85,7 +87,7 @@
             transition: opacity 0.5s;
         }
 
-        /* --- A4 Papier --- */
+        /* --- A4 Papier Layout --- */
         .sheet {
             background: var(--paper-white);
             width: 210mm;
@@ -111,7 +113,7 @@
         .doc-title h1 { margin: 0; font-size: 24px; color: var(--db-blue); text-transform: uppercase; letter-spacing: 1px; }
         .doc-title span { font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: 600; }
 
-        /* --- Meta Grid --- */
+        /* --- Meta Grid (Vak, Klas...) --- */
         .meta-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -175,7 +177,7 @@
         
         .checkbox-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 kolommen */
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
 
@@ -198,13 +200,8 @@
         .ql-container.ql-snow { border: none !important; font-family: 'Inter', sans-serif; font-size: 14px; background: white; }
         .ql-editor { min-height: 50px; padding: 12px 15px; line-height: 1.5; }
         
-        /* Editors MET toolbar (bovenaan) */
         .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid var(--border-light) !important; background: white; }
-
-        /* Editors ZONDER toolbar (strak) - lichte border bovenkant */
-        .editor-clean .ql-container.ql-snow {
-            border-top: 1px solid #f3f4f6 !important;
-        }
+        .editor-clean .ql-container.ql-snow { border-top: 1px solid #f3f4f6 !important; }
 
         /* --- Gedeelde Werkbalk Bordschema --- */
         #toolbar-bordschema { border: none; border-bottom: 1px solid var(--border-light); background: white; padding: 8px; }
@@ -218,32 +215,24 @@
         /* --- Zelfreflectie --- */
         .reflection-container { border-color: #fcd34d; }
         .reflection-header { background-color: #fffbeb; color: #b45309; }
-
-        /* --- Smileys --- */
         .smiley-rating { display: flex; gap: 15px; padding: 10px 15px; border-bottom: 1px solid #fcd34d; background: #fff; }
         .smiley-btn { font-size: 24px; cursor: pointer; opacity: 0.3; filter: grayscale(100%); transition: all 0.2s; user-select: none; }
         .smiley-btn:hover { opacity: 0.7; transform: scale(1.1); filter: grayscale(50%); }
         .smiley-btn.selected { opacity: 1; filter: grayscale(0%); transform: scale(1.3); }
 
-        /* =========================================
-           PRINT STIJLEN
-           ========================================= */
+        /* --- Print / PDF instellingen --- */
         @media print {
             .controls { display: none !important; }
             #save-status { display: none !important; }
             .ql-toolbar, #toolbar-bordschema { display: none !important; }
-            
             body { background: white; margin: 0; padding: 0; }
             .sheet { box-shadow: none; width: 100%; margin: 0; padding: 0 20mm; }
-
             .input-clean { border: 1px solid #ddd; background: transparent; padding: 5px 10px !important; }
             .section-container { border: 1px solid #ccc; }
             .checkbox-container { border-bottom: 1px solid #ccc; }
             .board-grid { border-top: 1px solid #ccc; }
             .board-column { border-right: 1px solid #ccc; background: transparent !important; }
-            
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            
             .ql-editor { height: auto !important; overflow: visible !important; padding: 5px 15px !important; }
             .smiley-btn { display: inline-block; }
         }
@@ -255,30 +244,23 @@
 
     <div class="controls">
         <button class="btn btn-save-file" onclick="downloadData()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-            Les Opslaan
+            Les Opslaan (JSON)
         </button>
-
         <input type="file" id="file-input" accept=".json" onchange="uploadData(this)">
         <button class="btn btn-load-file" onclick="document.getElementById('file-input').click()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/></svg>
             Les Openen
         </button>
-
         <button class="btn btn-pdf" onclick="saveToPDF()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             PDF Maken
         </button>
-
         <button class="btn btn-new" onclick="clearForm()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             Nieuwe Les
         </button>
     </div>
 
     <div id="save-status">Wijzigingen automatisch opgeslagen</div>
 
-    <div class="sheet">
+    <div class="sheet" id="main-sheet">
         <div class="header-section">
             <div class="logo-container">
                 <img src="logo.jpg" alt="Don Bosco Logo" style="max-width: 180px;">
@@ -290,22 +272,10 @@
         </div>
 
         <div class="meta-grid">
-            <div class="input-group">
-                <label>Vak</label>
-                <input type="text" class="input-clean" id="vak">
-            </div>
-            <div class="input-group">
-                <label>Klas</label>
-                <input type="text" class="input-clean" id="klas">
-            </div>
-            <div class="input-group">
-                <label>Lesuur</label>
-                <input type="text" class="input-clean" id="lesuur" placeholder="bv. 3e uur">
-            </div>
-            <div class="input-group">
-                <label>Tijd / Duur</label>
-                <input type="text" class="input-clean" id="tijd" placeholder="bv. 50 min">
-            </div>
+            <div class="input-group"><label>Vak</label><input type="text" class="input-clean" id="vak"></div>
+            <div class="input-group"><label>Klas</label><input type="text" class="input-clean" id="klas"></div>
+            <div class="input-group"><label>Lesuur</label><input type="text" class="input-clean" id="lesuur" placeholder="bv. 3e uur"></div>
+            <div class="input-group"><label>Tijd / Duur</label><input type="text" class="input-clean" id="tijd" placeholder="bv. 50 min"></div>
         </div>
 
         <div class="section-container">
@@ -338,13 +308,12 @@
                     <label class="checkbox-item"><input type="checkbox" value="Partnerwerk"> Partnerwerk</label>
                     <label class="checkbox-item"><input type="checkbox" value="Individueel"> Zelfstandig werk</label>
                     <label class="checkbox-item"><input type="checkbox" value="Klasgesprek"> Klasgesprek</label>
-                    <label class="checkbox-item"><input type="checkbox" value="Groepswerk"> Begrijpend lezen</label>
-                    <label class="checkbox-item"><input type="checkbox" value="Partnerwerk"> Begrijpend luisteren/kijken</label>
-                    <label class="checkbox-item"><input type="checkbox" value="Individueel"> Vraag- en antwoordgesprek</label>
-                    <label class="checkbox-item"><input type="checkbox" value="Klasgesprek"> Co- en peerevaluatie</label>
-                    <label class="checkbox-item"><input type="checkbox" value="Klasgesprek"> Placemat</label>
-                    <label class="checkbox-item"><input type="checkbox" value="Klasgesprek"> Jigsaw</label>
-
+                    <label class="checkbox-item"><input type="checkbox" value="Begrijpend lezen"> Begrijpend lezen</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Begrijpend kijken"> Begrijpend luisteren/kijken</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Vraag-antwoord"> Vraag- en antwoordgesprek</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Peerevaluatie"> Co- en peerevaluatie</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Placemat"> Placemat</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Jigsaw"> Jigsaw</label>
                 </div>
             </div>
             <div id="editor-werkvormen"></div>
@@ -367,7 +336,6 @@
 
         <div class="section-container">
             <div class="section-header">Bordschema (Links - Midden - Rechts)</div>
-            
             <div id="toolbar-bordschema">
                 <span class="ql-formats">
                     <select class="ql-size">
@@ -394,20 +362,10 @@
                     <button class="ql-clean"></button>
                 </span>
             </div>
-
             <div class="board-grid">
-                <div class="board-column">
-                    <div class="board-col-title">Linker Bordvleugel</div>
-                    <div id="editor-bord-links" style="min-height: 150px"></div>
-                </div>
-                <div class="board-column">
-                    <div class="board-col-title">Middenbord</div>
-                    <div id="editor-bord-midden" style="min-height: 150px"></div>
-                </div>
-                <div class="board-column">
-                    <div class="board-col-title">Rechter Bordvleugel</div>
-                    <div id="editor-bord-rechts" style="min-height: 150px"></div>
-                </div>
+                <div class="board-column"><div class="board-col-title">Linker Bordvleugel</div><div id="editor-bord-links" style="min-height: 150px"></div></div>
+                <div class="board-column"><div class="board-col-title">Middenbord</div><div id="editor-bord-midden" style="min-height: 150px"></div></div>
+                <div class="board-column"><div class="board-col-title">Rechter Bordvleugel</div><div id="editor-bord-rechts" style="min-height: 150px"></div></div>
             </div>
         </div>
 
@@ -432,125 +390,68 @@
     <script>
         // --- Globale variabelen ---
         let currentSmileyScore = 0;
-        
-        // --- ZACHTER ZWART (Grijs #374151) ---
-        const defaultLesverloop = 
-            "<p><strong style='color: #374151;'><u>Beginsituatie</u></strong></p>" +
-            "<p><br></p><p><br></p><p><br></p>" +  
-            "<p><strong style='color: #374151;'><u>Eigenlijke les</u></strong></p>" +
-            "<p><br></p><p><br></p><p><br></p>" +  
-            "<p><strong style='color: #374151;'><u>Slot</u></strong></p>" +
-            "<p><br></p>";
-
-        // --- Quill Setup ---
-        // 1. Full Toolbar (voor doelen, lesopbouw)
-        const fullToolbarOptions = [
-            [{ 'size': ['small', false, 'large', 'huge'] }], 
-            ['bold', 'italic', 'underline'],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            [{ 'color': [] }, { 'background': [] }],
-            ['clean']
-        ];
-
+        const defaultLesverloop = "<p><strong style='color: #374151;'><u>Beginsituatie</u></strong></p><p><br></p><p><br></p><p><strong style='color: #374151;'><u>Eigenlijke les</u></strong></p><p><br></p><p><br></p><p><strong style='color: #374151;'><u>Slot</u></strong></p><p><br></p>";
+        const fullToolbarOptions = [[{ 'size': ['small', false, 'large', 'huge'] }], ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'color': [] }, { 'background': [] }], ['clean']];
         const quillInstances = {};
 
         function initRichEditor(id, placeholder) {
-            const quill = new Quill(id, {
-                theme: 'snow',
-                placeholder: placeholder,
-                modules: { toolbar: fullToolbarOptions }
-            });
+            const quill = new Quill(id, { theme: 'snow', placeholder: placeholder, modules: { toolbar: fullToolbarOptions } });
             quillInstances[id] = quill;
             quill.on('text-change', () => saveData());
             return quill;
         }
 
-        // 2. Clean Editor (ZONDER toolbar)
         function initCleanEditor(id, placeholder) {
-            const quill = new Quill(id, {
-                theme: 'snow',
-                placeholder: placeholder,
-                modules: { toolbar: false } // Geen werkbalk
-            });
+            const quill = new Quill(id, { theme: 'snow', placeholder: placeholder, modules: { toolbar: false } });
             quillInstances[id] = quill;
             quill.on('text-change', () => saveData());
             return quill;
         }
 
-        // 3. Bord Editor (met gedeelde toolbar)
         function initBoardEditor(id, placeholder) {
-            const quill = new Quill(id, {
-                theme: 'snow',
-                placeholder: placeholder,
-                modules: { toolbar: '#toolbar-bordschema' }
-            });
+            const quill = new Quill(id, { theme: 'snow', placeholder: placeholder, modules: { toolbar: '#toolbar-bordschema' } });
             quillInstances[id] = quill;
             quill.on('text-change', () => saveData());
             return quill;
         }
 
-        // --- Editors Starten ---
-        
-        // Rijke editors
         initRichEditor('#editor-leerplan', 'Doelen...');
         initRichEditor('#editor-lesdoelen', 'Wat moeten ze kennen/kunnen?');
-        
         const verloopEditor = initRichEditor('#editor-lesverloop', '');
-        if (verloopEditor.getText().trim().length === 0) {
-            verloopEditor.root.innerHTML = defaultLesverloop;
-        }
+        if (verloopEditor.getText().trim().length === 0) verloopEditor.root.innerHTML = defaultLesverloop;
 
-        // Simpele editors (zonder werkbalk)
         initCleanEditor('#editor-werkvormen', 'Extra notities bij werkvormen...');
         initCleanEditor('#editor-materiaal', 'Extra notities (bv. paginanummers)...');
         initCleanEditor('#editor-huiswerk', 'Bv. Oefening 5 en 6 tegen volgende les...');
         initCleanEditor('#editor-reflectie', 'Eigen notities...');
         
-        // Bord
         initBoardEditor('#editor-bord-links', 'L...');
         initBoardEditor('#editor-bord-midden', 'M...');
         initBoardEditor('#editor-bord-rechts', 'R...');
         
-
-        // Auto-Save listeners
         const inputs = ['vak', 'klas', 'lesuur', 'tijd', 'onderwerp'];
-        inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', saveData);
-        });
-        
-        // Listeners voor checkboxes
-        document.querySelectorAll('input[type="checkbox"]').forEach(box => {
-            box.addEventListener('change', saveData);
-        });
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', saveData));
+        document.querySelectorAll('input[type="checkbox"]').forEach(box => box.addEventListener('change', saveData));
 
-        // --- SMILEY FUNCTIE ---
         function setSmiley(score) {
             currentSmileyScore = score;
-            for (let i = 1; i <= 5; i++) {
-                document.getElementById(`smiley-${i}`).classList.remove('selected');
-            }
+            for (let i = 1; i <= 5; i++) document.getElementById(`smiley-${i}`).classList.remove('selected');
             if (score > 0) document.getElementById(`smiley-${score}`).classList.add('selected');
             saveData();
         }
 
-        // --- CHECKBOX HELPER ---
         function getCheckboxes(containerId) {
             const inputs = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
             const checked = [];
-            inputs.forEach(input => {
-                if(input.checked) checked.push(input.value);
-            });
+            inputs.forEach(input => { if(input.checked) checked.push(input.value); });
             return checked;
         }
 
         function setCheckboxes(containerId, values) {
             const inputs = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
-            inputs.forEach(input => {
-                input.checked = values.includes(input.value);
-            });
+            inputs.forEach(input => { input.checked = values.includes(input.value); });
         }
 
-        // --- DATA LOGICA ---
         function gatherData() {
              return {
                 vak: document.getElementById('vak').value,
@@ -558,23 +459,18 @@
                 lesuur: document.getElementById('lesuur').value,
                 tijd: document.getElementById('tijd').value,
                 onderwerp: document.getElementById('onderwerp').value,
-                
                 leerplan: quillInstances['#editor-leerplan'].root.innerHTML,
                 lesdoelen: quillInstances['#editor-lesdoelen'].root.innerHTML,
                 lesverloop: quillInstances['#editor-lesverloop'].root.innerHTML,
-                
                 checkWerkvormen: getCheckboxes('check-werkvormen'),
                 werkvormen: quillInstances['#editor-werkvormen'].root.innerHTML,
-                
                 checkMateriaal: getCheckboxes('check-materiaal'),
                 materiaal: quillInstances['#editor-materiaal'].root.innerHTML,
-                
                 bordLinks: quillInstances['#editor-bord-links'].root.innerHTML,
                 bordMidden: quillInstances['#editor-bord-midden'].root.innerHTML,
                 bordRechts: quillInstances['#editor-bord-rechts'].root.innerHTML,
                 huiswerk: quillInstances['#editor-huiswerk'].root.innerHTML,
                 reflectie: quillInstances['#editor-reflectie'].root.innerHTML,
-                
                 evaluatieScore: currentSmileyScore
             };
         }
@@ -588,12 +484,8 @@
 
             if(data.leerplan) quillInstances['#editor-leerplan'].root.innerHTML = data.leerplan;
             if(data.lesdoelen) quillInstances['#editor-lesdoelen'].root.innerHTML = data.lesdoelen;
-            
-            if(data.lesverloop) {
-                quillInstances['#editor-lesverloop'].root.innerHTML = data.lesverloop;
-            } else {
-                quillInstances['#editor-lesverloop'].root.innerHTML = defaultLesverloop;
-            }
+            if(data.lesverloop) quillInstances['#editor-lesverloop'].root.innerHTML = data.lesverloop;
+            else quillInstances['#editor-lesverloop'].root.innerHTML = defaultLesverloop;
             
             if(data.checkWerkvormen) setCheckboxes('check-werkvormen', data.checkWerkvormen);
             if(data.werkvormen) quillInstances['#editor-werkvormen'].root.innerHTML = data.werkvormen;
@@ -620,23 +512,14 @@
 
         function loadData() {
             const saved = localStorage.getItem('lesficheData');
-            if (saved) {
-                populateData(JSON.parse(saved));
-            }
+            if (saved) populateData(JSON.parse(saved));
         }
 
         function downloadData() {
             const data = gatherData();
             const filename = `${data.vak || 'Les'} - ${data.onderwerp || 'Voorbereiding'}.json`;
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            saveAs(blob, filename);
         }
 
         function uploadData(input) {
@@ -649,9 +532,7 @@
                     populateData(data);
                     saveData();
                     alert('Les succesvol ingeladen!');
-                } catch (err) {
-                    alert('Fout bij inlezen bestand.');
-                }
+                } catch (err) { alert('Fout bij inlezen bestand.'); }
             };
             reader.readAsText(file);
             input.value = '';
@@ -662,9 +543,7 @@
                 localStorage.removeItem('lesficheData');
                 inputs.forEach(id => document.getElementById(id).value = '');
                 document.querySelectorAll('input[type="checkbox"]').forEach(box => box.checked = false);
-                for (const key in quillInstances) {
-                    quillInstances[key].setText('');
-                }
+                for (const key in quillInstances) quillInstances[key].setText('');
                 quillInstances['#editor-lesverloop'].root.innerHTML = defaultLesverloop;
                 setSmiley(0);
                 window.scrollTo(0,0);
@@ -682,5 +561,3 @@
     </script>
 </body>
 </html>
-
-
