@@ -220,6 +220,16 @@
         .smiley-btn:hover { opacity: 0.7; transform: scale(1.1); filter: grayscale(50%); }
         .smiley-btn.selected { opacity: 1; filter: grayscale(0%); transform: scale(1.3); }
 
+        /* --- Zorg Link Styling --- */
+        .zorg-link {
+            color: var(--db-blue);
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        .zorg-link:hover {
+            color: var(--db-dark);
+        }
+
         /* --- Print / PDF instellingen --- */
         @media print {
             .controls { display: none !important; }
@@ -235,6 +245,7 @@
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .ql-editor { height: auto !important; overflow: visible !important; padding: 5px 15px !important; }
             .smiley-btn { display: inline-block; }
+            .zorg-link { text-decoration: none; color: #1f2937; } /* Verbergt link-stijl bij printen indien gewenst */
         }
 
         @page { margin: 20mm 0; size: A4 portrait; }
@@ -291,6 +302,17 @@
         <div class="section-container">
             <div class="section-header">Lesdoelen (Concreet)</div>
             <div id="editor-lesdoelen"></div>
+        </div>
+
+        <div class="section-container">
+            <div class="section-header">Zorg & Inclusie</div>
+            <div style="padding: 15px; font-size: 14px;">
+                <p style="margin: 0 0 12px 0; color: #374151; line-height: 1.5;">
+                    Via deze <a href="https://www.jouw-zorglink-website.nl" target="_blank" class="zorg-link">link</a> kan je een overzicht van de zorgmaatregelen per klas terugvinden.
+                </p>
+                <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #6b7280; display: block; margin-bottom: 5px; letter-spacing: 0.5px;">Leerlingen met extra nood aan aandacht / zorg:</label>
+                <input type="text" id="zorg-aandacht" class="input-clean" placeholder="Noteer hier de namen van de leerlingen waar je extra aandacht voor moet hebben...">
+            </div>
         </div>
 
         <div class="section-container">
@@ -388,7 +410,6 @@
     </div>
 
     <script>
-        // --- Globale variabelen ---
         let currentSmileyScore = 0;
         const defaultLesverloop = "<p><strong style='color: #374151;'><u>Beginsituatie</u></strong></p><p><br></p><p><br></p><p><strong style='color: #374151;'><u>Eigenlijke les</u></strong></p><p><br></p><p><br></p><p><strong style='color: #374151;'><u>Slot</u></strong></p><p><br></p>";
         const fullToolbarOptions = [[{ 'size': ['small', false, 'large', 'huge'] }], ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'color': [] }, { 'background': [] }], ['clean']];
@@ -429,7 +450,7 @@
         initBoardEditor('#editor-bord-midden', 'M...');
         initBoardEditor('#editor-bord-rechts', 'R...');
         
-        const inputs = ['vak', 'klas', 'lesuur', 'tijd', 'onderwerp'];
+        const inputs = ['vak', 'klas', 'lesuur', 'tijd', 'onderwerp', 'zorg-aandacht'];
         inputs.forEach(id => document.getElementById(id).addEventListener('input', saveData));
         document.querySelectorAll('input[type="checkbox"]').forEach(box => box.addEventListener('change', saveData));
 
@@ -459,6 +480,7 @@
                 lesuur: document.getElementById('lesuur').value,
                 tijd: document.getElementById('tijd').value,
                 onderwerp: document.getElementById('onderwerp').value,
+                zorgAandacht: document.getElementById('zorg-aandacht').value,
                 leerplan: quillInstances['#editor-leerplan'].root.innerHTML,
                 lesdoelen: quillInstances['#editor-lesdoelen'].root.innerHTML,
                 lesverloop: quillInstances['#editor-lesverloop'].root.innerHTML,
@@ -481,6 +503,7 @@
             document.getElementById('lesuur').value = data.lesuur || '';
             document.getElementById('tijd').value = data.tijd || '';
             document.getElementById('onderwerp').value = data.onderwerp || '';
+            document.getElementById('zorg-aandacht').value = data.zorgAandacht || '';
 
             if(data.leerplan) quillInstances['#editor-leerplan'].root.innerHTML = data.leerplan;
             if(data.lesdoelen) quillInstances['#editor-lesdoelen'].root.innerHTML = data.lesdoelen;
